@@ -1,19 +1,21 @@
 import string
 import re
-import random
+import secrets
 
 
-def generate_login():
+def generate_login() -> str:
     alphabet = string.ascii_letters + string.digits
     while True:
-        login = ''.join(random.choices(alphabet, k=random.randint(6, 11)))
-        if re.match(r'^[a-zA-Z]\w{5,10}$', login):
+        login = ''.join(secrets.choice(alphabet) for i in range(10))
+        if re.match(r'^[a-zA-Z]\w+$', login):
             return login
 
 
-def generate_password():
+def generate_password() -> str:
     alphabet = string.ascii_letters + string.digits + string.punctuation
-    while True:
-        password = ''.join(random.choices(alphabet, k=random.randint(10, 14)))
-        if re.match(r'^[\w|\W]{10,}$', password):
-            return password
+    password = ''.join(secrets.choice(alphabet) for i in range(10))
+    return password
+
+
+def generate_token() -> str:
+    return secrets.token_urlsafe(16)
