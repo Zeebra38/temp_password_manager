@@ -26,6 +26,9 @@ class Login(db.Model):
     password = db.Column(StringEncryptedType(db.String(30), secret_key, AesEngine, 'pkcs5'), nullable=False)
     site = db.Column(StringEncryptedType(db.String(40), secret_key, AesEngine, 'pkcs5'), nullable=True)
 
+    def to_dict(self):
+        return {'id': self.id, 'login': self.login, 'password': self.password, 'site': self.site}
+
     def __str__(self):
         return f'<Data: id={self.id} user_id={self.user_id} login={self.login} password={self.password}>'
 
