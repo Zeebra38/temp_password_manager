@@ -1,0 +1,269 @@
+openapi: 3.0.0
+info:
+  title: "Temporary password manager"
+  description: "API to gain access to all features of Temporary password manager"
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/pwd.mng/api/v1.0/
+    description: Default server
+paths:
+  /logins:
+    get:
+      description: Obtain all logins for user
+      parameters:
+        - name: token
+          in: query
+          description: User token
+          schema:
+            type: string
+            example: rKhMqgH9au5LWxRuBoJ6_g
+      responses:
+        200:
+          description: Successful request of getting user logins
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  logins:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Login'
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    post:
+      description: Create new login information
+      requestBody:
+        $ref: '#/components/requestBodies/login_data'
+      parameters:
+        - name: generate
+          in: query
+          description: Need to generate data
+          schema:
+            type: integer
+            enum: [ 0, 1 ]
+            example:
+      responses:
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        400:
+          $ref: '#/components/responses/MissingJSON'
+        200:
+          description: Successfully added login to database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+                  login:
+                    type: object
+                    oneOf:
+                      - $ref: '#/components/schemas/Login'
+  /logins/{login Id}:
+    parameters:
+      - name: login Id
+        in: path
+        required: true
+        schema:
+          type: integer
+          description: Id of login data
+          minimum: 1
+          example: 5
+    get:
+      description: Obtain 1 login data by login ID
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          $ref: '#/components/responses/SuccessLogin'
+    patch:
+      description: Modify 1 login data by login ID
+      requestBody:
+        $ref: '#/components/requestBodies/login_data'
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        400:
+          $ref: '#/components/responses/MissingJSON'
+        201:
+          $ref: '#/components/responses/SuccessLogin'
+    delete:
+      description: Delete 1 login data by login Id
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: Successful deleted login from database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+  /register:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: JSON with username field inside
+              type: object
+              properties:
+                username:
+                  type: string
+                  maxLength: 20
+                  minLength: 2
+                  pattern: '^\D\w{1,19}$'
+                  example: Cool_username
+      description: Register a new account by username
+      responses:
+        400:
+          description: There must be a "username" key in JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - error
+                  error:
+                    type: string
+                    enum:
+                      - You need to pass "username" in JSON
+        201:
+          description: Successfully registered, response with API token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+                  token:
+                    description: Unique security API token
+                    type: string
+
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          example: 5
+        login:
+          type: string
+          description: username/login stored in database
+          example: new_user1
+        password:
+          type: string
+          description: password stored in database
+          example: very!strong_password
+        site:
+          type: string
+          example: example.com
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: token
+
+  requestBodies:
+    login_data:
+      description: JSON with login data
+      content:
+        application/json:
+          schema:
+            required:
+              - login
+              - password
+            type: object
+            properties:
+              login:
+                type: string
+                description: login
+                minLength: 2
+                maxLength: 20
+                example: login
+                pattern: '^\D\w{1,19}$'
+              password:
+                type: string
+                format: password
+                description: password
+                minLength: 2
+                maxLength: 20
+                example: qwerty123
+              site:
+                type: string
+                description: site or another commentary about password
+                example: example.com
+                default: ''
+
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - error
+              error:
+                type: string
+                enum:
+                  - Wrong token
+                  - You need to pass token parameter
+    MissingJSON:
+      description: JSON object is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - error
+              error:
+                type: string
+                enum:
+                  - You must append json
+    SuccessLogin:
+      description: Successful operation with login data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - success
+              login:
+                type: object
+                oneOf:
+                  - $ref: '#/components/schemas/Login'
+
+security:
+  - ApiKeyAuth: [ ]
+
+

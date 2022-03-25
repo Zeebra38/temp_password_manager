@@ -78,7 +78,7 @@ def get_or_update_login(login_id):
         login.password = request.json['password']
         login.site = request.json.get('site', login.site)
         db.session.commit()
-        return make_response(jsonify({'status': 'success'}), 201)
+        return make_response(jsonify({'status': 'success', 'login': login.to_dict()}), 201)
     if request.method == 'DELETE':
         user = get_user_by_token(token)
         if user is None:
@@ -92,7 +92,7 @@ def get_or_update_login(login_id):
 @app.route(f'{base_url}/register', methods=['POST'])
 def register():
     if not request.json or 'username' not in request.json:
-        jsonify({'status': 'error', 'error': 'You need to pass "username" in JSON'}), 200
+        return make_response(jsonify({'status': 'error', 'error': 'You need to pass "username" in JSON'}), 400)
     new_token = generate_token()
     while new_token in db.session.query(User.token).all():
         new_token = generate_token()
