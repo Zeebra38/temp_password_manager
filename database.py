@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import StringEncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
+
 from secret_data import secret_key  # секретный ключ str
 
 db = SQLAlchemy()
@@ -52,12 +53,6 @@ def get_logins_by_token(token: str):
     for login in logins:
         res.append({'id': login.id, 'login': login.login, 'password': login.password, 'site': login.site})
     return res
-
-
-def get_logins_by_site(token: str, site: str):
-    user = get_user_by_token(token)
-    if user is None:
-        return -1
 
 
 def get_login_by_login_id(token: str, login_id: int):

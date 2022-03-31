@@ -99,7 +99,7 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
         200:
-          description: Successful deleted login from database
+          description: Successfully deleted login from database
           content:
             application/json:
               schema:
@@ -156,6 +156,25 @@ paths:
                   token:
                     description: Unique security API token
                     type: string
+  /delete_user:
+    description: Delete user and all of his logins by API token
+    delete:
+      responses:
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        200:
+          description: Successfully deleted user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+
+
 
 components:
   schemas:
