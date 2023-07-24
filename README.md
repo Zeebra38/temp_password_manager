@@ -11,7 +11,7 @@
 Также сервис может выступать в качестве обычного менеджера паролей, в котором всё хранится в зашифрованном виде.
 
 ### Запросы к API подробно расписаны в файле `swagger.yaml`, но вот основные команды
-[Visual representation](https://editor.swagger.io/?url=https://raw.githubusercontent.com/Zeebra38/temp_password_manager/master/swagger.yaml)
+[Визуальный интерфейс swagger](https://editor.swagger.io/?url=https://raw.githubusercontent.com/Zeebra38/temp_password_manager/master/swagger.yaml)
 1. POST /pwd.mng/api/v1.0/register - Регистрация
 2. GET /pwd.mng/api/v1.0/logins - Получить информацию по всем учетным данным
 3. POST /pwd.mng/api/v1.0/logins - Добавить учетную запись
